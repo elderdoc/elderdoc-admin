@@ -1,26 +1,64 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-cream: var(--cream);
+  --color-forest: var(--forest);
+  --color-forest-deep: var(--forest-deep);
+  --color-forest-soft: var(--forest-soft);
+
+  --font-sans: 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+
+  --shadow-modal: 0 24px 48px -12px rgba(15, 20, 16, 0.18), 0 4px 12px rgba(15, 20, 16, 0.06);
+  --shadow-elevated: 0 4px 12px -4px rgba(15, 20, 16, 0.08), 0 2px 4px rgba(15, 20, 16, 0.04);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --cream:       #FCFAF7;
+  --cream-deep:  #F4F0E8;
+  --ink:         #131816;
+  --forest:      #1A6B4A;
+  --forest-deep: #0E4D34;
+  --forest-soft: #E6EFEB;
+
+  --background:         var(--cream);
+  --foreground:         var(--ink);
+  --card:               #FFFFFF;
+  --card-foreground:    var(--ink);
+  --primary:            var(--forest);
+  --primary-foreground: #FFFFFF;
+  --muted:              #F2EEE6;
+  --muted-foreground:   #6B6759;
+  --destructive:        #B14444;
+  --destructive-foreground: #FFFFFF;
+  --border:             #E8E2D4;
+  --input:              #DDD6C5;
+  --ring:               var(--forest);
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    line-height: 1.55;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

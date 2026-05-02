@@ -41,7 +41,7 @@ export default async function CaregiverDetailPage({ params }: { params: Promise<
             <Field label="Rate" value={profile?.hourlyMin ? `$${Number(profile.hourlyMin).toFixed(0)}–$${Number(profile.hourlyMax ?? profile.hourlyMin).toFixed(0)}/hr` : null} />
             <Field label="Headline" value={profile?.headline} />
             <Field label="Experience" value={profile?.experience} />
-            <Field label="Location" value={[loc?.city, loc?.state].filter(Boolean).join(', ')} />
+            <Field label="Location" value={[loc?.city, loc?.state].filter(Boolean).join(', ') || null} />
             <Field label="Phone" value={user?.phone} />
           </div>
         </div>

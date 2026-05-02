@@ -25,6 +25,14 @@ const COLUMNS = [
   { label: '', width: 'w-[10%]' },
 ]
 
+const ROLE_PILLS = ['client', 'caregiver', 'admin']
+
+const suspendedBadge = (
+  <span className="ml-1.5 inline-flex items-center rounded-full bg-destructive/10 text-destructive border border-destructive/20 px-2 py-0.5 text-[11px] font-medium">
+    Suspended
+  </span>
+)
+
 export function UsersClient({ users }: { users: AdminUser[] }) {
   const router = useRouter()
   const [filter, setFilter] = useState('all')
@@ -89,14 +97,6 @@ export function UsersClient({ users }: { users: AdminUser[] }) {
     })
   }
 
-  const suspendedBadge = (
-    <span className="ml-1.5 inline-flex items-center rounded-full bg-destructive/10 text-destructive border border-destructive/20 px-2 py-0.5 text-[11px] font-medium">
-      Suspended
-    </span>
-  )
-
-  const ROLE_PILLS = ['client', 'caregiver', 'admin']
-
   return (
     <div>
       <div className="flex items-center gap-4 mb-5">
@@ -104,6 +104,7 @@ export function UsersClient({ users }: { users: AdminUser[] }) {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          aria-label="Search users"
           placeholder="Search by name or email…"
           className="ml-auto w-64 rounded-[10px] border border-border bg-card px-3.5 py-2 text-[13px] placeholder:text-muted-foreground/50 focus:border-[var(--forest)] focus:outline-none focus:ring-2 focus:ring-[var(--forest-soft)] transition-shadow"
         />
@@ -156,24 +157,25 @@ export function UsersClient({ users }: { users: AdminUser[] }) {
       >
         <div className="space-y-4">
           <div>
-            <label className={labelCls}>Name</label>
-            <input value={editName} onChange={(e) => setEditName(e.target.value)} className={inputCls} />
+            <label htmlFor="edit-name" className={labelCls}>Name</label>
+            <input id="edit-name" value={editName} onChange={(e) => setEditName(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className={labelCls}>Email</label>
-            <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} className={inputCls} />
+            <label htmlFor="edit-email" className={labelCls}>Email</label>
+            <input id="edit-email" type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className={labelCls}>Phone</label>
-            <input value={editPhone} onChange={(e) => setEditPhone(e.target.value)} className={inputCls} />
+            <label htmlFor="edit-phone" className={labelCls}>Phone</label>
+            <input id="edit-phone" value={editPhone} onChange={(e) => setEditPhone(e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label className={labelCls}>Role</label>
+            <label htmlFor="edit-role-group" className={labelCls}>Role</label>
             <div className="flex gap-2 mt-1">
               {ROLE_PILLS.map((r) => (
                 <button
                   key={r}
                   onClick={() => setEditRole(r)}
+                  aria-pressed={editRole === r}
                   className={[
                     'flex-1 h-9 rounded-full text-[12.5px] font-medium capitalize transition-colors',
                     editRole === r ? 'bg-primary text-primary-foreground' : 'border border-border hover:bg-muted',
