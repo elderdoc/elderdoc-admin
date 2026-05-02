@@ -18,14 +18,14 @@ const STATUS_OPTIONS = [
 ]
 
 const COLUMNS = [
-  { label: 'Name', width: 'w-[22%]' },
-  { label: 'Care types', width: 'w-[18%]' },
-  { label: 'Certs', width: 'w-[13%]' },
-  { label: 'Rate', width: 'w-[10%]' },
-  { label: 'Location', width: 'w-[13%]' },
-  { label: 'Status', width: 'w-[10%]' },
+  { label: 'Name', width: 'w-[18%]' },
+  { label: 'Care types', width: 'w-[16%]' },
+  { label: 'Certs', width: 'w-[9%]' },
+  { label: 'Rate', width: 'w-[9%]' },
+  { label: 'Location', width: 'w-[12%]' },
+  { label: 'Status', width: 'w-[9%]' },
   { label: 'Applied', width: 'w-[10%]' },
-  { label: '', width: 'w-[4%]' },
+  { label: '', width: 'w-[17%]' },
 ]
 
 const STATUS_BADGE: Record<string, string> = {
@@ -80,21 +80,21 @@ export function CaregiversClient({ caregivers }: { caregivers: AdminCaregiver[] 
           const badgeCls = STATUS_BADGE[cg.status ?? 'pending'] ?? STATUS_BADGE.pending
           return (
             <DataRow key={cg.id}>
-              <span className="w-[22%] flex items-center text-[13.5px] font-semibold truncate pr-3">
+              <span className="w-[18%] flex items-center text-[13.5px] font-semibold truncate pr-3">
                 {cg.name ?? '—'}
                 {cg.suspendedAt && suspendedBadge}
               </span>
-              <span className="w-[18%] text-[12px] text-muted-foreground truncate pr-3">
+              <span className="w-[16%] text-[12px] text-muted-foreground truncate pr-3">
                 {cg.careTypes.slice(0, 2).join(', ')}{cg.careTypes.length > 2 ? ` +${cg.careTypes.length - 2}` : ''}
               </span>
-              <span className="w-[13%] text-[12px] text-muted-foreground">
+              <span className="w-[9%] text-[12px] text-muted-foreground">
                 {cg.certifications.length > 0 ? `${cg.certifications.length} cert${cg.certifications.length > 1 ? 's' : ''}` : '—'}
               </span>
-              <span className="w-[10%] text-[12px] text-muted-foreground">{rateLabel}</span>
-              <span className="w-[13%] text-[12px] text-muted-foreground">
+              <span className="w-[9%] text-[12px] text-muted-foreground">{rateLabel}</span>
+              <span className="w-[12%] text-[12px] text-muted-foreground">
                 {[cg.city, cg.state].filter(Boolean).join(', ') || '—'}
               </span>
-              <span className="w-[10%]">
+              <span className="w-[9%]">
                 <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium capitalize ${badgeCls}`}>
                   {cg.status ?? 'pending'}
                 </span>
@@ -102,7 +102,7 @@ export function CaregiversClient({ caregivers }: { caregivers: AdminCaregiver[] 
               <span className="w-[10%] text-[12px] text-muted-foreground">
                 {new Date(cg.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
-              <span className="w-[4%] flex items-center gap-1.5 text-[12px] justify-end">
+              <span className="w-[17%] flex items-center gap-1.5 text-[12px] justify-end">
                 <Link href={`/caregivers/${cg.id}`} className="text-foreground/70 hover:text-foreground transition-colors">View</Link>
                 {cg.status === 'pending' && (
                   <>
