@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { DataList, DataHeader, DataRow } from '@/components/data-list'
 import { StatusFilter } from '@/components/status-filter'
+import { EditPanel } from '@/components/edit-panel'
 
 const STATUS_OPTIONS = [
   { label: 'All', value: 'all' },
@@ -34,6 +35,15 @@ type CareRequest = {
   clientName: string | null
   clientEmail: string
   recipientName: string | null
+}
+
+function Field({ label, value }: { label: string; value: string | null | undefined }) {
+  return (
+    <div>
+      <p className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-[13.5px]">{value ?? '—'}</p>
+    </div>
+  )
 }
 
 function StatusPill({ status }: { status: string | null }) {
@@ -72,6 +82,7 @@ function formatDate(d: Date) {
 
 export function CareRequestsClient({ careRequests }: { careRequests: CareRequest[] }) {
   const [filter, setFilter] = useState('all')
+  const [selected, setSelected] = useState<CareRequest | null>(null)
 
   const filtered = useMemo(() => {
     if (filter === 'all') return careRequests
@@ -91,7 +102,7 @@ export function CareRequestsClient({ careRequests }: { careRequests: CareRequest
           </p>
         )}
         {filtered.map((req) => (
-          <DataRow key={req.id}>
+          <DataRow key={req.id} onClick={() => setSelected(req)}>
             <span className="w-[22%] text-[13.5px] font-semibold truncate pr-4">
               {req.title ?? req.careType}
             </span>
@@ -117,6 +128,26 @@ export function CareRequestsClient({ careRequests }: { careRequests: CareRequest
           </DataRow>
         ))}
       </DataList>
+
+      <EditPanel
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title={selected?.title ?? selected?.careType ?? 'Care Request'}
+      >
+        {selected && (
+          <div className="space-y-4">
+            <Field label="ID" value={selected.id} />
+            <Field label="Title" value={selected.title} />
+            <Field label="Care type" value={selected.careType} />
+            <Field label="Status" value={selected.status} />
+            <Field label="Budget" value={formatBudget(selected.budgetMin, selected.budgetMax)} />
+            <Field label="Client" value={selected.clientName} />
+            <Field label="Client email" value={selected.clientEmail} />
+            <Field label="Recipient" value={selected.recipientName} />
+            <Field label="Created" value={formatDate(selected.createdAt)} />
+          </div>
+        )}
+      </EditPanel>
     </div>
   )
 }

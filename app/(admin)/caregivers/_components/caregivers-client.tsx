@@ -8,6 +8,16 @@ import { approveCaregiver, suspendCaregiverUser, deleteCaregiverUser } from '@/d
 import { DataList, DataHeader, DataRow } from '@/components/data-list'
 import { StatusFilter } from '@/components/status-filter'
 import { ConfirmModal } from '@/components/confirm-modal'
+import { EditPanel } from '@/components/edit-panel'
+
+function Field({ label, value }: { label: string; value: string | null | undefined }) {
+  return (
+    <div>
+      <p className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-[13.5px]">{value ?? '—'}</p>
+    </div>
+  )
+}
 
 const STATUS_OPTIONS = [
   { label: 'All', value: 'all' },
@@ -43,6 +53,7 @@ const suspendedBadge = (
 export function CaregiversClient({ caregivers }: { caregivers: AdminCaregiver[] }) {
   const router = useRouter()
   const [filter, setFilter] = useState('all')
+  const [selected, setSelected] = useState<AdminCaregiver | null>(null)
   const [confirmModal, setConfirmModal] = useState<{
     type: 'approve' | 'suspend' | 'delete'
     caregiver: AdminCaregiver
@@ -79,7 +90,7 @@ export function CaregiversClient({ caregivers }: { caregivers: AdminCaregiver[] 
           const rateLabel = cg.hourlyMin ? `$${Number(cg.hourlyMin).toFixed(0)}–$${Number(cg.hourlyMax ?? cg.hourlyMin).toFixed(0)}/hr` : '—'
           const badgeCls = STATUS_BADGE[cg.status ?? 'pending'] ?? STATUS_BADGE.pending
           return (
-            <DataRow key={cg.id}>
+            <DataRow key={cg.id} onClick={() => setSelected(cg)}>
               <span className="w-[18%] flex items-center text-[13.5px] font-semibold truncate pr-3">
                 {cg.name ?? '—'}
                 {cg.suspendedAt && suspendedBadge}
@@ -103,22 +114,47 @@ export function CaregiversClient({ caregivers }: { caregivers: AdminCaregiver[] 
                 {new Date(cg.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
               </span>
               <span className="w-[17%] flex items-center gap-1.5 text-[12px] justify-end">
-                <Link href={`/caregivers/${cg.id}`} className="text-foreground/70 hover:text-foreground transition-colors">View</Link>
+                <Link href={`/caregivers/${cg.id}`} onClick={(e) => e.stopPropagation()} className="text-foreground/70 hover:text-foreground transition-colors">View</Link>
                 {cg.status === 'pending' && (
                   <>
                     <span className="text-muted-foreground/40">·</span>
-                    <button onClick={() => setConfirmModal({ type: 'approve', caregiver: cg })} className="text-[var(--forest)] hover:text-[var(--forest-deep)] transition-colors">Approve</button>
+                    <button onClick={(e) => { e.stopPropagation(); setConfirmModal({ type: 'approve', caregiver: cg }) }} className="text-[var(--forest)] hover:text-[var(--forest-deep)] transition-colors">Approve</button>
                   </>
                 )}
                 <span className="text-muted-foreground/40">·</span>
-                <button onClick={() => setConfirmModal({ type: 'suspend', caregiver: cg })} className="text-amber-600 hover:text-amber-700 transition-colors">Suspend</button>
+                <button onClick={(e) => { e.stopPropagation(); setConfirmModal({ type: 'suspend', caregiver: cg }) }} className="text-amber-600 hover:text-amber-700 transition-colors">Suspend</button>
                 <span className="text-muted-foreground/40">·</span>
-                <button onClick={() => setConfirmModal({ type: 'delete', caregiver: cg })} className="text-destructive hover:text-destructive/80 transition-colors">Delete</button>
+                <button onClick={(e) => { e.stopPropagation(); setConfirmModal({ type: 'delete', caregiver: cg }) }} className="text-destructive hover:text-destructive/80 transition-colors">Delete</button>
               </span>
             </DataRow>
           )
         })}
       </DataList>
+
+      <EditPanel
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title={selected?.name ?? 'Caregiver'}
+      >
+        {selected && (
+          <div className="space-y-4">
+            <Field label="Status" value={selected.status ?? 'pending'} />
+            <Field label="Hourly rate" value={selected.hourlyMin ? `$${Number(selected.hourlyMin).toFixed(0)}–$${Number(selected.hourlyMax ?? selected.hourlyMin).toFixed(0)}/hr` : null} />
+            <Field label="Location" value={[selected.city, selected.state].filter(Boolean).join(', ') || null} />
+            <Field label="Care types" value={selected.careTypes.length > 0 ? selected.careTypes.join(', ') : null} />
+            <Field label="Certifications" value={selected.certifications.length > 0 ? selected.certifications.join(', ') : null} />
+            <Field label="Applied" value={new Date(selected.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} />
+            {selected.suspendedAt && (
+              <Field label="Suspended at" value={new Date(selected.suspendedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} />
+            )}
+            <div className="pt-2">
+              <Link href={`/caregivers/${selected.id}`} className="text-[13px] text-[var(--forest)] hover:text-[var(--forest-deep)] transition-colors">
+                View full profile →
+              </Link>
+            </div>
+          </div>
+        )}
+      </EditPanel>
 
       {confirmModal?.type === 'approve' && (
         <ConfirmModal open onClose={() => setConfirmModal(null)}

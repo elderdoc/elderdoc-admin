@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { DataList, DataHeader, DataRow } from '@/components/data-list'
 import { StatusFilter } from '@/components/status-filter'
+import { EditPanel } from '@/components/edit-panel'
 
 const STATUS_OPTIONS = [
   { label: 'All', value: 'all' },
@@ -35,6 +36,15 @@ type Payment = {
   caregiverName: string | null
 }
 
+function Field({ label, value }: { label: string; value: string | null | undefined }) {
+  return (
+    <div>
+      <p className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-[13.5px]">{value ?? '—'}</p>
+    </div>
+  )
+}
+
 function StatusPill({ status }: { status: string | null }) {
   const s = status ?? 'pending'
   const styles: Record<string, string> = {
@@ -60,6 +70,7 @@ function formatDate(d: Date) {
 
 export function PaymentsClient({ payments }: { payments: Payment[] }) {
   const [filter, setFilter] = useState('all')
+  const [selected, setSelected] = useState<Payment | null>(null)
 
   const filtered = useMemo(() => {
     if (filter === 'all') return payments
@@ -79,7 +90,7 @@ export function PaymentsClient({ payments }: { payments: Payment[] }) {
           </p>
         )}
         {filtered.map((payment) => (
-          <DataRow key={payment.id}>
+          <DataRow key={payment.id} onClick={() => setSelected(payment)}>
             <span className="w-[20%] pr-4">
               <span className="block text-[13px] font-medium truncate">{payment.clientName ?? '—'}</span>
               <span className="block text-[11.5px] text-muted-foreground truncate">{payment.clientEmail}</span>
@@ -108,6 +119,28 @@ export function PaymentsClient({ payments }: { payments: Payment[] }) {
           </DataRow>
         ))}
       </DataList>
+
+      <EditPanel
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title="Payment details"
+      >
+        {selected && (
+          <div className="space-y-4">
+            <Field label="ID" value={selected.id} />
+            <Field label="Status" value={selected.status} />
+            <Field label="Amount" value={`$${Number(selected.amount).toFixed(2)}`} />
+            <Field label="Platform fee" value={`$${Number(selected.fee).toFixed(2)}`} />
+            <Field label="Net payout" value={`$${(Number(selected.amount) - Number(selected.fee)).toFixed(2)}`} />
+            <Field label="Payment method" value={selected.method} />
+            <Field label="Client" value={selected.clientName} />
+            <Field label="Client email" value={selected.clientEmail} />
+            <Field label="Caregiver" value={selected.caregiverName} />
+            <Field label="Released at" value={selected.releasedAt ? formatDate(selected.releasedAt) : null} />
+            <Field label="Created" value={formatDate(selected.createdAt)} />
+          </div>
+        )}
+      </EditPanel>
     </div>
   )
 }

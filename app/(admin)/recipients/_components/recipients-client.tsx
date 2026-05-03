@@ -9,13 +9,13 @@ import { ConfirmModal } from '@/components/confirm-modal'
 import { EditPanel, inputCls, labelCls } from '@/components/edit-panel'
 
 const COLUMNS = [
-  { label: 'Name', width: 'w-[20%]' },
-  { label: 'Client', width: 'w-[20%]' },
+  { label: 'Name', width: 'w-[18%]' },
+  { label: 'Client', width: 'w-[18%]' },
   { label: 'Relationship', width: 'w-[12%]' },
-  { label: 'Conditions', width: 'w-[20%]' },
+  { label: 'Conditions', width: 'w-[18%]' },
   { label: 'Mobility', width: 'w-[12%]' },
   { label: 'Created', width: 'w-[12%]' },
-  { label: '', width: 'w-[4%]' },
+  { label: '', width: 'w-[10%]' },
 ]
 
 export function RecipientsClient({ recipients }: { recipients: AdminRecipient[] }) {
@@ -58,11 +58,11 @@ export function RecipientsClient({ recipients }: { recipients: AdminRecipient[] 
       <DataList>
         <DataHeader columns={COLUMNS} />
         {recipients.map((r) => (
-          <DataRow key={r.id}>
-            <span className="w-[20%] text-[13.5px] font-semibold truncate pr-3">{r.name}</span>
-            <span className="w-[20%] text-[12px] text-muted-foreground truncate pr-3">{r.clientName ?? r.clientEmail}</span>
+          <DataRow key={r.id} onClick={() => openEdit(r)}>
+            <span className="w-[18%] text-[13.5px] font-semibold truncate pr-3">{r.name}</span>
+            <span className="w-[18%] text-[12px] text-muted-foreground truncate pr-3">{r.clientName ?? r.clientEmail}</span>
             <span className="w-[12%] text-[12px] text-muted-foreground capitalize">{r.relationship ?? '—'}</span>
-            <span className="w-[20%] text-[12px] text-muted-foreground">
+            <span className="w-[18%] text-[12px] text-muted-foreground">
               {r.conditions && r.conditions.length > 0
                 ? `${r.conditions.slice(0, 2).join(', ')}${r.conditions.length > 2 ? ` +${r.conditions.length - 2}` : ''}`
                 : '—'}
@@ -71,10 +71,10 @@ export function RecipientsClient({ recipients }: { recipients: AdminRecipient[] 
             <span className="w-[12%] text-[12px] text-muted-foreground">
               {new Date(r.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </span>
-            <span className="w-[4%] flex items-center gap-1.5 text-[12px] justify-end">
-              <button onClick={() => openEdit(r)} className="text-foreground/70 hover:text-foreground transition-colors">Edit</button>
+            <span className="w-[10%] flex items-center gap-1.5 text-[12px] justify-end">
+              <button onClick={(e) => { e.stopPropagation(); openEdit(r) }} className="text-foreground/70 hover:text-foreground transition-colors">Edit</button>
               <span className="text-muted-foreground/40">·</span>
-              <button onClick={() => setDeleteTarget(r)} className="text-destructive hover:text-destructive/80 transition-colors">Delete</button>
+              <button onClick={(e) => { e.stopPropagation(); setDeleteTarget(r) }} className="text-destructive hover:text-destructive/80 transition-colors">Delete</button>
             </span>
           </DataRow>
         ))}

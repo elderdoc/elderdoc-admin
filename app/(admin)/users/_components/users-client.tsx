@@ -116,7 +116,7 @@ export function UsersClient({ users }: { users: AdminUser[] }) {
           <p className="px-5 py-10 text-[13.5px] text-muted-foreground text-center">No users found.</p>
         )}
         {filtered.map((u) => (
-          <DataRow key={u.id}>
+          <DataRow key={u.id} onClick={() => openEdit(u)}>
             <span className="w-[30%] flex items-center text-[13.5px] font-semibold truncate pr-4">
               {u.name ?? '—'}
               {u.suspendedAt && suspendedBadge}
@@ -127,15 +127,15 @@ export function UsersClient({ users }: { users: AdminUser[] }) {
               {new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </span>
             <span className="w-[10%] flex items-center gap-2 text-[12px] justify-end pr-1">
-              <button onClick={() => openEdit(u)} className="text-foreground/70 hover:text-foreground transition-colors">Edit</button>
+              <button onClick={(e) => { e.stopPropagation(); openEdit(u) }} className="text-foreground/70 hover:text-foreground transition-colors">Edit</button>
               <span className="text-muted-foreground/40">·</span>
               {u.suspendedAt ? (
-                <button onClick={() => setConfirmModal({ type: 'unsuspend', user: u })} className="text-[var(--forest)] hover:text-[var(--forest-deep)] transition-colors">Unsuspend</button>
+                <button onClick={(e) => { e.stopPropagation(); setConfirmModal({ type: 'unsuspend', user: u }) }} className="text-[var(--forest)] hover:text-[var(--forest-deep)] transition-colors">Unsuspend</button>
               ) : (
-                <button onClick={() => setConfirmModal({ type: 'suspend', user: u })} className="text-amber-600 hover:text-amber-700 transition-colors">Suspend</button>
+                <button onClick={(e) => { e.stopPropagation(); setConfirmModal({ type: 'suspend', user: u }) }} className="text-amber-600 hover:text-amber-700 transition-colors">Suspend</button>
               )}
               <span className="text-muted-foreground/40">·</span>
-              <button onClick={() => setConfirmModal({ type: 'delete', user: u })} className="text-destructive hover:text-destructive/80 transition-colors">Delete</button>
+              <button onClick={(e) => { e.stopPropagation(); setConfirmModal({ type: 'delete', user: u }) }} className="text-destructive hover:text-destructive/80 transition-colors">Delete</button>
             </span>
           </DataRow>
         ))}

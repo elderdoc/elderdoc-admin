@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { DataList, DataHeader, DataRow } from '@/components/data-list'
 import { StatusFilter } from '@/components/status-filter'
+import { EditPanel } from '@/components/edit-panel'
 
 const STATUS_OPTIONS = [
   { label: 'All', value: 'all' },
@@ -31,6 +32,15 @@ type Dispute = {
   paymentAmount: string | null
 }
 
+function Field({ label, value }: { label: string; value: string | null | undefined }) {
+  return (
+    <div>
+      <p className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-[13.5px]">{value ?? '—'}</p>
+    </div>
+  )
+}
+
 function StatusPill({ status }: { status: string }) {
   const styles: Record<string, string> = {
     open:
@@ -55,6 +65,7 @@ function formatDate(d: Date) {
 
 export function DisputesClient({ disputes }: { disputes: Dispute[] }) {
   const [filter, setFilter] = useState('all')
+  const [selected, setSelected] = useState<Dispute | null>(null)
 
   const filtered = useMemo(() => {
     if (filter === 'all') return disputes
@@ -74,7 +85,7 @@ export function DisputesClient({ disputes }: { disputes: Dispute[] }) {
           </p>
         )}
         {filtered.map((dispute) => (
-          <DataRow key={dispute.id}>
+          <DataRow key={dispute.id} onClick={() => setSelected(dispute)}>
             <span className="w-[22%] pr-4">
               <span className="block text-[13px] font-medium truncate">{dispute.clientName ?? '—'}</span>
               <span className="block text-[11.5px] text-muted-foreground truncate">{dispute.clientEmail}</span>
@@ -97,6 +108,25 @@ export function DisputesClient({ disputes }: { disputes: Dispute[] }) {
           </DataRow>
         ))}
       </DataList>
+
+      <EditPanel
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title="Dispute details"
+      >
+        {selected && (
+          <div className="space-y-4">
+            <Field label="ID" value={selected.id} />
+            <Field label="Status" value={selected.status} />
+            <Field label="Reason" value={selected.reason} />
+            <Field label="Client" value={selected.clientName} />
+            <Field label="Client email" value={selected.clientEmail} />
+            <Field label="Payment amount" value={selected.paymentAmount != null ? `$${Number(selected.paymentAmount).toFixed(2)}` : null} />
+            <Field label="Created" value={formatDate(selected.createdAt)} />
+            <Field label="Resolved at" value={selected.resolvedAt ? formatDate(selected.resolvedAt) : null} />
+          </div>
+        )}
+      </EditPanel>
     </div>
   )
 }

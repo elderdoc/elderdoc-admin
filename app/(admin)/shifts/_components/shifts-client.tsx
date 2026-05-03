@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { DataList, DataHeader, DataRow } from '@/components/data-list'
 import { StatusFilter } from '@/components/status-filter'
+import { EditPanel } from '@/components/edit-panel'
 
 const STATUS_OPTIONS = [
   { label: 'All', value: 'all' },
@@ -35,6 +36,15 @@ type Shift = {
   caregiverName: string | null
 }
 
+function Field({ label, value }: { label: string; value: string | null | undefined }) {
+  return (
+    <div>
+      <p className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-[13.5px]">{value ?? '—'}</p>
+    </div>
+  )
+}
+
 function StatusPill({ status }: { status: string | null }) {
   const s = status ?? 'scheduled'
   const styles: Record<string, string> = {
@@ -60,6 +70,7 @@ function formatDate(d: Date) {
 
 export function ShiftsClient({ shifts }: { shifts: Shift[] }) {
   const [filter, setFilter] = useState('all')
+  const [selected, setSelected] = useState<Shift | null>(null)
 
   const filtered = useMemo(() => {
     if (filter === 'all') return shifts
@@ -79,7 +90,7 @@ export function ShiftsClient({ shifts }: { shifts: Shift[] }) {
           </p>
         )}
         {filtered.map((shift) => (
-          <DataRow key={shift.id}>
+          <DataRow key={shift.id} onClick={() => setSelected(shift)}>
             <span className="w-[12%] text-[12.5px] text-muted-foreground pr-3">
               {shift.date}
             </span>
@@ -108,6 +119,27 @@ export function ShiftsClient({ shifts }: { shifts: Shift[] }) {
           </DataRow>
         ))}
       </DataList>
+
+      <EditPanel
+        open={selected !== null}
+        onClose={() => setSelected(null)}
+        title={`Shift — ${selected?.date ?? ''}`}
+      >
+        {selected && (
+          <div className="space-y-4">
+            <Field label="ID" value={selected.id} />
+            <Field label="Date" value={selected.date} />
+            <Field label="Start time" value={selected.startTime} />
+            <Field label="End time" value={selected.endTime} />
+            <Field label="Status" value={selected.status} />
+            <Field label="Client" value={selected.clientName} />
+            <Field label="Client email" value={selected.clientEmail} />
+            <Field label="Caregiver" value={selected.caregiverName} />
+            <Field label="Billed at" value={selected.billedAt ? formatDate(selected.billedAt) : null} />
+            <Field label="Created" value={formatDate(selected.createdAt)} />
+          </div>
+        )}
+      </EditPanel>
     </div>
   )
 }
