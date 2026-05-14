@@ -6,7 +6,7 @@ import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Users, UserCheck, User, Baby,
   ClipboardList, Briefcase, Clock, CreditCard, AlertCircle,
-  Calendar, Activity, Leaf, LogOut,
+  Calendar, Activity, Leaf, LogOut, Tag,
 } from 'lucide-react'
 
 const NAV = [
@@ -20,6 +20,7 @@ const NAV = [
   { label: 'Shifts', href: '/shifts', icon: Clock, group: 'Operations' },
   { label: 'Payments', href: '/payments', icon: CreditCard, group: 'Finance' },
   { label: 'Disputes', href: '/disputes', icon: AlertCircle, group: 'Finance' },
+  { label: 'Care Types', href: '/care-types', icon: Tag, group: 'Platform' },
   { label: 'Calendar', href: '/calendar', icon: Calendar, group: 'Platform' },
   { label: 'Activity', href: '/activity', icon: Activity, group: 'Platform' },
 ] as const
