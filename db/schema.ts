@@ -56,12 +56,14 @@ export const caregiverProfiles = pgTable('caregiver_profiles', {
 })
 
 export const careTypes = pgTable('care_types', {
-  id:        uuid('id').defaultRandom().primaryKey(),
-  key:       text('key').notNull().unique(),
-  label:     text('label').notNull(),
-  isActive:  boolean('is_active').notNull().default(true),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  id:          uuid('id').defaultRandom().primaryKey(),
+  key:         text('key').notNull().unique(),
+  label:       text('label').notNull(),
+  description: text('description'),
+  icon:        text('icon'),
+  isActive:    boolean('is_active').notNull().default(true),
+  createdAt:   timestamp('created_at').defaultNow().notNull(),
+  updatedAt:   timestamp('updated_at').defaultNow().notNull(),
 })
 
 export const caregiverCareTypes = pgTable('caregiver_care_types', {

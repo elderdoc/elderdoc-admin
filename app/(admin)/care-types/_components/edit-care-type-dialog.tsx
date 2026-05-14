@@ -2,16 +2,24 @@
 
 import { useEffect, useState, useTransition } from 'react'
 import type { AdminCareType } from '@/domains/care-types'
-import { updateCareTypeLabel, setCareTypeActive } from '@/domains/care-types'
+import { updateCareType, setCareTypeActive } from '@/domains/care-types'
+import { CareTypeIcon, ICON_OPTIONS, type IconName } from '@/lib/care-type-icons'
 
 export function EditCareTypeDialog({
   row, onClose, onSaved,
 }: { row: AdminCareType | null; onClose: () => void; onSaved: () => void }) {
   const [label, setLabel] = useState('')
+  const [description, setDescription] = useState('')
+  const [icon, setIcon] = useState<IconName | ''>('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  useEffect(() => { setLabel(row?.label ?? ''); setError(null) }, [row])
+  useEffect(() => {
+    setLabel(row?.label ?? '')
+    setDescription(row?.description ?? '')
+    setIcon((row?.icon ?? '') as IconName | '')
+    setError(null)
+  }, [row])
 
   if (!row) return null
 
@@ -19,7 +27,11 @@ export function EditCareTypeDialog({
     e.preventDefault()
     setError(null)
     startTransition(async () => {
-      const res = await updateCareTypeLabel(row!.id, label)
+      const res = await updateCareType(row!.id, {
+        label,
+        description: description || null,
+        icon: icon || null,
+      })
       if (res.success) onSaved()
       else setError(res.error)
     })
@@ -36,7 +48,7 @@ export function EditCareTypeDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
-      <div className="w-full max-w-[420px] rounded-[12px] bg-card p-5 shadow-lg" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-[480px] rounded-[12px] bg-card p-5 shadow-lg" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-[15px] font-semibold mb-3">Edit care type</h2>
         <form onSubmit={handleSave} className="space-y-3">
           <div>
@@ -50,6 +62,39 @@ export function EditCareTypeDialog({
               className="w-full rounded-[8px] border border-border bg-background px-3 py-2 text-[13.5px] focus:outline-none focus:ring-2 focus:ring-[var(--forest)]"
               required
             />
+          </div>
+          <div>
+            <label className="block text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Description</label>
+            <textarea
+              value={description} onChange={(e) => setDescription(e.target.value)}
+              placeholder="Bathing, dressing, daily routines"
+              rows={2} maxLength={200}
+              className="w-full rounded-[8px] border border-border bg-background px-3 py-2 text-[13.5px] focus:outline-none focus:ring-2 focus:ring-[var(--forest)] resize-none"
+            />
+          </div>
+          <div>
+            <label className="block text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Icon</label>
+            <div className="grid grid-cols-7 gap-1.5">
+              {ICON_OPTIONS.map((name) => {
+                const selected = icon === name
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => setIcon(selected ? '' : name)}
+                    title={name}
+                    className={[
+                      'flex h-9 w-9 items-center justify-center rounded-[8px] border transition-colors',
+                      selected
+                        ? 'border-[var(--forest)] bg-[var(--forest-soft)] text-[var(--forest-deep)]'
+                        : 'border-border hover:border-[var(--forest)]/40 hover:bg-muted',
+                    ].join(' ')}
+                  >
+                    <CareTypeIcon iconName={name} className="h-4 w-4" />
+                  </button>
+                )
+              })}
+            </div>
           </div>
           <div>
             <label className="block text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">Status</label>

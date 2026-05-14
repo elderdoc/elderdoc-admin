@@ -9,6 +9,8 @@ export type AdminCareType = {
   id: string
   key: string
   label: string
+  description: string | null
+  icon: string | null
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -17,6 +19,7 @@ export type AdminCareType = {
 const KEY_RE = /^[a-z][a-z0-9-]*$/
 const MAX_KEY_LEN = 64
 const MAX_LABEL_LEN = 80
+const MAX_DESC_LEN = 200
 
 async function notifyAppCacheBust() {
   const url = process.env.APP_URL
@@ -45,31 +48,43 @@ export async function getCareTypesMap(): Promise<Record<string, string>> {
   return Object.fromEntries(rows.map((r) => [r.key, r.label]))
 }
 
-export async function createCareType(input: { key: string; label: string }):
+export async function createCareType(input: { key: string; label: string; description?: string | null; icon?: string | null }):
   Promise<{ success: true; row: AdminCareType } | { success: false; error: string }> {
   const key = input.key.trim().toLowerCase()
   const label = input.label.trim()
+  const description = input.description?.trim() || null
+  const icon = input.icon?.trim() || null
   if (!key || key.length > MAX_KEY_LEN) return { success: false, error: 'Key must be 1–64 characters.' }
   if (!KEY_RE.test(key)) return { success: false, error: 'Key must be kebab-case (lowercase letters, digits, hyphens).' }
   if (!label || label.length > MAX_LABEL_LEN) return { success: false, error: 'Label must be 1–80 characters.' }
+  if (description && description.length > MAX_DESC_LEN) return { success: false, error: `Description must be ≤${MAX_DESC_LEN} characters.` }
 
   const existing = await db.select({ id: careTypes.id }).from(careTypes).where(eq(careTypes.key, key)).limit(1)
   if (existing.length > 0) return { success: false, error: `Key "${key}" already exists.` }
 
-  const [row] = await db.insert(careTypes).values({ key, label }).returning()
+  const [row] = await db.insert(careTypes).values({ key, label, description, icon }).returning()
   revalidatePath('/care-types')
   await notifyAppCacheBust()
   return { success: true, row }
 }
 
-export async function updateCareTypeLabel(id: string, label: string):
+export async function updateCareType(id: string, input: { label?: string; description?: string | null; icon?: string | null }):
   Promise<{ success: true; row: AdminCareType } | { success: false; error: string }> {
-  const trimmed = label.trim()
-  if (!trimmed || trimmed.length > MAX_LABEL_LEN) return { success: false, error: 'Label must be 1–80 characters.' }
-  const [row] = await db.update(careTypes)
-    .set({ label: trimmed, updatedAt: new Date() })
-    .where(eq(careTypes.id, id))
-    .returning()
+  const set: { label?: string; description?: string | null; icon?: string | null; updatedAt: Date } = { updatedAt: new Date() }
+  if (input.label !== undefined) {
+    const trimmed = input.label.trim()
+    if (!trimmed || trimmed.length > MAX_LABEL_LEN) return { success: false, error: 'Label must be 1–80 characters.' }
+    set.label = trimmed
+  }
+  if (input.description !== undefined) {
+    const trimmed = input.description?.trim() || null
+    if (trimmed && trimmed.length > MAX_DESC_LEN) return { success: false, error: `Description must be ≤${MAX_DESC_LEN} characters.` }
+    set.description = trimmed
+  }
+  if (input.icon !== undefined) {
+    set.icon = input.icon?.trim() || null
+  }
+  const [row] = await db.update(careTypes).set(set).where(eq(careTypes.id, id)).returning()
   if (!row) return { success: false, error: 'Care type not found.' }
   revalidatePath('/care-types')
   await notifyAppCacheBust()

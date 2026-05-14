@@ -7,6 +7,7 @@ import { DataList, DataHeader, DataRow } from '@/components/data-list'
 import { StatusFilter } from '@/components/status-filter'
 import { NewCareTypeDialog } from './new-care-type-dialog'
 import { EditCareTypeDialog } from './edit-care-type-dialog'
+import { CareTypeIcon } from '@/lib/care-type-icons'
 
 const STATUS_OPTIONS = [
   { label: 'All', value: 'all' },
@@ -15,12 +16,13 @@ const STATUS_OPTIONS = [
 ]
 
 const COLUMNS = [
-  { label: 'Label', width: 'w-[30%]' },
-  { label: 'Key', width: 'w-[28%]' },
-  { label: 'Status', width: 'w-[12%]' },
+  { label: '', width: 'w-[5%]' },
+  { label: 'Label', width: 'w-[25%]' },
+  { label: 'Key', width: 'w-[22%]' },
+  { label: 'Status', width: 'w-[10%]' },
   { label: 'Created', width: 'w-[14%]' },
   { label: 'Updated', width: 'w-[14%]' },
-  { label: '', width: 'w-[2%]' },
+  { label: '', width: 'w-[10%]' },
 ]
 
 export function CareTypesClient({ rows }: { rows: AdminCareType[] }) {
@@ -51,9 +53,17 @@ export function CareTypesClient({ rows }: { rows: AdminCareType[] }) {
         <DataHeader columns={COLUMNS} />
         {filtered.map((row) => (
           <DataRow key={row.id} onClick={() => setEditing(row)}>
-            <span className="w-[30%] flex items-center text-[13.5px] font-semibold truncate pr-3">{row.label}</span>
-            <span className="w-[28%] text-[12px] font-mono text-muted-foreground truncate pr-3">{row.key}</span>
-            <span className="w-[12%]">
+            <span className="w-[5%] flex items-center">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--forest-soft)] text-[var(--forest-deep)]">
+                <CareTypeIcon iconName={row.icon} className="h-4 w-4" />
+              </span>
+            </span>
+            <span className="w-[25%] flex flex-col text-[13.5px] truncate pr-3">
+              <span className="font-semibold truncate">{row.label}</span>
+              {row.description && <span className="text-[11.5px] text-muted-foreground truncate">{row.description}</span>}
+            </span>
+            <span className="w-[22%] text-[12px] font-mono text-muted-foreground truncate pr-3">{row.key}</span>
+            <span className="w-[10%]">
               <span className={[
                 'inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-medium',
                 row.isActive
@@ -69,7 +79,7 @@ export function CareTypesClient({ rows }: { rows: AdminCareType[] }) {
             <span className="w-[14%] text-[12px] text-muted-foreground">
               {new Date(row.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </span>
-            <span className="w-[2%]" />
+            <span className="w-[10%] text-[11.5px] font-mono text-muted-foreground/70 truncate">{row.icon ?? '—'}</span>
           </DataRow>
         ))}
       </DataList>
