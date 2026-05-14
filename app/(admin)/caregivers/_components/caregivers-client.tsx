@@ -50,7 +50,7 @@ const suspendedBadge = (
   </span>
 )
 
-export function CaregiversClient({ caregivers }: { caregivers: AdminCaregiver[] }) {
+export function CaregiversClient({ caregivers, careTypeLabels }: { caregivers: AdminCaregiver[]; careTypeLabels: Record<string, string> }) {
   const router = useRouter()
   const [filter, setFilter] = useState('all')
   const [selected, setSelected] = useState<AdminCaregiver | null>(null)
@@ -96,7 +96,7 @@ export function CaregiversClient({ caregivers }: { caregivers: AdminCaregiver[] 
                 {cg.suspendedAt && suspendedBadge}
               </span>
               <span className="w-[16%] text-[12px] text-muted-foreground truncate pr-3">
-                {cg.careTypes.slice(0, 2).join(', ')}{cg.careTypes.length > 2 ? ` +${cg.careTypes.length - 2}` : ''}
+                {cg.careTypes.slice(0, 2).map((k) => careTypeLabels[k] ?? k).join(', ')}{cg.careTypes.length > 2 ? ` +${cg.careTypes.length - 2}` : ''}
               </span>
               <span className="w-[9%] text-[12px] text-muted-foreground">
                 {cg.certifications.length > 0 ? `${cg.certifications.length} cert${cg.certifications.length > 1 ? 's' : ''}` : '—'}
@@ -141,7 +141,7 @@ export function CaregiversClient({ caregivers }: { caregivers: AdminCaregiver[] 
             <Field label="Status" value={selected.status ?? 'pending'} />
             <Field label="Hourly rate" value={selected.hourlyMin ? `$${Number(selected.hourlyMin).toFixed(0)}–$${Number(selected.hourlyMax ?? selected.hourlyMin).toFixed(0)}/hr` : null} />
             <Field label="Location" value={[selected.city, selected.state].filter(Boolean).join(', ') || null} />
-            <Field label="Care types" value={selected.careTypes.length > 0 ? selected.careTypes.join(', ') : null} />
+            <Field label="Care types" value={selected.careTypes.length > 0 ? selected.careTypes.map((k) => careTypeLabels[k] ?? k).join(', ') : null} />
             <Field label="Certifications" value={selected.certifications.length > 0 ? selected.certifications.join(', ') : null} />
             <Field label="Applied" value={new Date(selected.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} />
             {selected.suspendedAt && (

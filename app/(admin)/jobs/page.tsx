@@ -3,6 +3,7 @@ import { jobs, users, caregiverProfiles, careRequests } from '@elderdoc/db/schem
 import { desc, eq } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { DataList, DataHeader, DataRow } from '@/components/data-list'
+import { getCareTypesMap } from '@/domains/care-types'
 import Link from 'next/link'
 
 const COLUMNS = [
@@ -41,6 +42,8 @@ export default async function JobsPage() {
   const clientUsers = alias(users, 'client_users')
   const caregiverUsers = alias(users, 'caregiver_users')
 
+  const careTypeLabels = await getCareTypesMap()
+
   const rows = await db
     .select({
       id:              jobs.id,
@@ -75,7 +78,7 @@ export default async function JobsPage() {
         {rows.map((job) => (
           <DataRow key={job.id}>
             <span className="w-[22%] text-[13.5px] font-semibold truncate pr-4">
-              {job.requestTitle ?? job.requestCareType ?? '—'}
+              {job.requestTitle ?? (job.requestCareType ? (careTypeLabels[job.requestCareType] ?? job.requestCareType) : '—')}
             </span>
             <span className="w-[18%] pr-4">
               <span className="block text-[13px] font-medium truncate">{job.clientName ?? '—'}</span>

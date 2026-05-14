@@ -2,8 +2,10 @@ import { db } from '@elderdoc/db'
 import { careRequests, users, careRecipients } from '@elderdoc/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { CareRequestsClient } from './_components/care-requests-client'
+import { getCareTypesMap } from '@/domains/care-types'
 
 export default async function CareRequestsPage() {
+  const careTypeLabels = await getCareTypesMap()
   const rows = await db
     .select({
       id:            careRequests.id,
@@ -33,7 +35,7 @@ export default async function CareRequestsPage() {
         <h1 className="text-[24px] font-semibold tracking-[-0.02em]">Care Requests</h1>
         <p className="mt-1 text-[13.5px] text-muted-foreground">{data.length} total requests</p>
       </div>
-      <CareRequestsClient careRequests={data} />
+      <CareRequestsClient careRequests={data} careTypeLabels={careTypeLabels} />
     </div>
   )
 }

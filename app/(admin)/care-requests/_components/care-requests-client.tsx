@@ -80,7 +80,7 @@ function formatDate(d: Date) {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-export function CareRequestsClient({ careRequests }: { careRequests: CareRequest[] }) {
+export function CareRequestsClient({ careRequests, careTypeLabels }: { careRequests: CareRequest[]; careTypeLabels: Record<string, string> }) {
   const [filter, setFilter] = useState('all')
   const [selected, setSelected] = useState<CareRequest | null>(null)
 
@@ -104,7 +104,7 @@ export function CareRequestsClient({ careRequests }: { careRequests: CareRequest
         {filtered.map((req) => (
           <DataRow key={req.id} onClick={() => setSelected(req)}>
             <span className="w-[22%] text-[13.5px] font-semibold truncate pr-4">
-              {req.title ?? req.careType}
+              {req.title ?? (careTypeLabels[req.careType] ?? req.careType)}
             </span>
             <span className="w-[18%] pr-4">
               <span className="block text-[13px] font-medium truncate">{req.clientName ?? '—'}</span>
@@ -114,7 +114,7 @@ export function CareRequestsClient({ careRequests }: { careRequests: CareRequest
               {req.recipientName ?? '—'}
             </span>
             <span className="w-[12%] text-[12.5px] text-muted-foreground capitalize truncate pr-4">
-              {req.careType}
+              {careTypeLabels[req.careType] ?? req.careType}
             </span>
             <span className="w-[10%] pr-4">
               <StatusPill status={req.status} />
@@ -132,13 +132,13 @@ export function CareRequestsClient({ careRequests }: { careRequests: CareRequest
       <EditPanel
         open={selected !== null}
         onClose={() => setSelected(null)}
-        title={selected?.title ?? selected?.careType ?? 'Care Request'}
+        title={selected?.title ?? (selected ? (careTypeLabels[selected.careType] ?? selected.careType) : 'Care Request')}
       >
         {selected && (
           <div className="space-y-4">
             <Field label="ID" value={selected.id} />
             <Field label="Title" value={selected.title} />
-            <Field label="Care type" value={selected.careType} />
+            <Field label="Care type" value={careTypeLabels[selected.careType] ?? selected.careType} />
             <Field label="Status" value={selected.status} />
             <Field label="Budget" value={formatBudget(selected.budgetMin, selected.budgetMax)} />
             <Field label="Client" value={selected.clientName} />

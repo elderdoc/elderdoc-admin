@@ -1,4 +1,5 @@
 import { getClientById } from '@/domains/clients'
+import { getCareTypesMap } from '@/domains/care-types'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -12,7 +13,7 @@ const STATUS_BADGE: Record<string, string> = {
 
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const data = await getClientById(id)
+  const [data, careTypeLabels] = await Promise.all([getClientById(id), getCareTypesMap()])
   if (!data) notFound()
 
   return (
@@ -65,8 +66,8 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
           {data.requests.map((req) => (
             <div key={req.id} className="flex items-center justify-between px-5 py-3 border-b border-border last:border-b-0">
               <div>
-                <p className="text-[13.5px] font-semibold">{req.title ?? req.careType}</p>
-                <p className="text-[12px] text-muted-foreground capitalize">{req.careType} · {req.frequency ?? 'No frequency'}</p>
+                <p className="text-[13.5px] font-semibold">{req.title ?? (careTypeLabels[req.careType] ?? req.careType)}</p>
+                <p className="text-[12px] text-muted-foreground capitalize">{careTypeLabels[req.careType] ?? req.careType} · {req.frequency ?? 'No frequency'}</p>
               </div>
               <span className={`rounded-full px-2.5 py-0.5 text-[11.5px] font-medium capitalize ${STATUS_BADGE[req.status ?? 'draft'] ?? STATUS_BADGE.draft}`}>
                 {req.status ?? 'draft'}

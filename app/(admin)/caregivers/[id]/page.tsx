@@ -1,4 +1,5 @@
 import { getCaregiverById, type AdminCaregiverDetail } from '@/domains/caregivers'
+import { getCareTypesMap } from '@/domains/care-types'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
@@ -14,7 +15,7 @@ function Field({ label, value }: { label: string; value: string | null | undefin
 
 export default async function CaregiverDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const data: AdminCaregiverDetail | null = await getCaregiverById(id)
+  const [data, careTypeLabels]: [AdminCaregiverDetail | null, Record<string, string>] = await Promise.all([getCaregiverById(id), getCareTypesMap()])
   if (!data) notFound()
 
   const profile = data.caregiver_profiles
@@ -51,7 +52,7 @@ export default async function CaregiverDetailPage({ params }: { params: Promise<
             <h2 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wider mb-3">Care Types</h2>
             <div className="flex flex-wrap gap-1.5">
               {data.careTypes.map((ct) => (
-                <span key={ct.careType} className="rounded-full bg-[var(--forest-soft)] px-2.5 py-0.5 text-[12px] font-medium text-[var(--forest-deep)]">{ct.careType}</span>
+                <span key={ct.careType} className="rounded-full bg-[var(--forest-soft)] px-2.5 py-0.5 text-[12px] font-medium text-[var(--forest-deep)]">{careTypeLabels[ct.careType] ?? ct.careType}</span>
               ))}
             </div>
           </div>
