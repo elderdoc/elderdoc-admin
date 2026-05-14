@@ -1,7 +1,7 @@
 'use server'
 
-import { db } from '@elderdoc/db'
-import { users } from '@elderdoc/db/schema'
+import { db } from '@/services/db'
+import { users } from '@/db/schema'
 import { eq, desc } from 'drizzle-orm'
 
 export type AdminUser = {

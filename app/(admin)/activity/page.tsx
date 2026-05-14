@@ -1,5 +1,5 @@
-import { db } from '@elderdoc/db'
-import { notifications, users } from '@elderdoc/db/schema'
+import { db } from '@/services/db'
+import { notifications, users } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { DataList, DataHeader, DataRow } from '@/components/data-list'
 

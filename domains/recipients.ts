@@ -1,7 +1,7 @@
 'use server'
 
-import { db } from '@elderdoc/db'
-import { careRecipients, users } from '@elderdoc/db/schema'
+import { db } from '@/services/db'
+import { careRecipients, users } from '@/db/schema'
 import { eq, desc } from 'drizzle-orm'
 
 export type AdminRecipient = {

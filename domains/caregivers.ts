@@ -1,10 +1,10 @@
 'use server'
 
-import { db } from '@elderdoc/db'
+import { db } from '@/services/db'
 import {
   users, caregiverProfiles, caregiverCareTypes, caregiverCertifications,
   caregiverLanguages, caregiverLocations, caregiverWorkPrefs,
-} from '@elderdoc/db/schema'
+} from '@/db/schema'
 import { eq, desc, inArray } from 'drizzle-orm'
 
 export type AdminCaregiver = {

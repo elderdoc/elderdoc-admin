@@ -1,5 +1,5 @@
-import { db } from '@elderdoc/db'
-import { careRequests, users, careRecipients } from '@elderdoc/db/schema'
+import { db } from '@/services/db'
+import { careRequests, users, careRecipients } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { CareRequestsClient } from './_components/care-requests-client'
 import { getCareTypesMap } from '@/domains/care-types'

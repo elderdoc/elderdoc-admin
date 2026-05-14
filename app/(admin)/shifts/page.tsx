@@ -1,5 +1,5 @@
-import { db } from '@elderdoc/db'
-import { shifts, jobs, users, caregiverProfiles } from '@elderdoc/db/schema'
+import { db } from '@/services/db'
+import { shifts, jobs, users, caregiverProfiles } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { ShiftsClient } from './_components/shifts-client'

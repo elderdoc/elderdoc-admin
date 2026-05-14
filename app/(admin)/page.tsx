@@ -1,7 +1,7 @@
-import { db } from '@elderdoc/db'
+import { db } from '@/services/db'
 import {
   users, caregiverProfiles, careRequests, jobs, payments, disputes, notifications,
-} from '@elderdoc/db/schema'
+} from '@/db/schema'
 import { eq, count, sum, desc } from 'drizzle-orm'
 import { formatDistanceToNow } from 'date-fns'
 

@@ -1,5 +1,5 @@
-import { db } from '@elderdoc/db'
-import { disputes, users, payments } from '@elderdoc/db/schema'
+import { db } from '@/services/db'
+import { disputes, users, payments } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { DisputesClient } from './_components/disputes-client'
 

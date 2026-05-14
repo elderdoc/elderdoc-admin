@@ -2,8 +2,8 @@
 
 import { revalidatePath } from 'next/cache'
 import { eq, asc } from 'drizzle-orm'
-import { db } from '@elderdoc/db'
-import { careTypes } from '@elderdoc/db/schema'
+import { db } from '@/services/db'
+import { careTypes } from '@/db/schema'
 
 export type AdminCareType = {
   id: string

@@ -1,5 +1,5 @@
-import { db } from '@elderdoc/db'
-import { jobs, users, caregiverProfiles, careRequests } from '@elderdoc/db/schema'
+import { db } from '@/services/db'
+import { jobs, users, caregiverProfiles, careRequests } from '@/db/schema'
 import { desc, eq } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { DataList, DataHeader, DataRow } from '@/components/data-list'
